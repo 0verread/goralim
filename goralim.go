@@ -3,41 +3,57 @@ package goralim
 import(
 	"time"
 	"sync"
-	"math"
+
+	redis "github.com/go-redis/redis"
 )
 
 type TokenBucket struct {
 	Key string
+	RedisClient *redis.Client
 	Capacity int
-	RefillRate float64 //Bucket refil rate
+	RefillRate int
 	Tokens int
-	lastRefilledAt time.Time
+	LastRefilledAt time.Time
 	mutex sync.Mutex
 
 }
 
-func NewTokenBucket(key string, capacity int, refillRate float64) *TokenBucket {
+func NewTokenBucket(key string, redisClient *redis.Client, capacity int, refillRate int) *TokenBucket {
 	return &TokenBucket {
 		Key: key,
+		RedisClient: redisClient,
 		Capacity: capacity,
 		RefillRate: refillRate,
 		Tokens: capacity,
-		lastRefilledAt: time.Now(),
+		LastRefilledAt: time.Now(),
 	}
 }
 
 func (tb *TokenBucket) refillTokens() {
-	now := time.Now()
-	elapsedTIme := now.Sub(tb.lastRefilledAt).Seconds()
-	tokensToAdd := float64(elapsedTIme)*tb.RefillRate
-	tb.Tokens = int(math.Min(tokensToAdd+float64(tb.Tokens), float64(tb.Capacity)))
-	tb.lastRefilledAt = now
+	now := time.Now().UnixNano() / 1e6
+	lastRefill, err := tb.RedisClient.Get(tb.Key + ":lastRefill").Int64()
+	if err != nil {
+		lastRefill = now
+		tb.RedisClient.Set(tb.Key + ":lastRefill", now, 0)
+	}
+	elapsedTIme := now - lastRefill
+	tokensToAdd := int(elapsedTIme) * (tb.RefillRate/1000)
+
+	currentTokens, _ := tb.RedisClient.Get(tb.Key).Int()
+	newTokens := currentTokens + tokensToAdd
+	if newTokens > tb.Capacity {
+		newTokens = tb.Capacity
+	}
+	tb.RedisClient.Set(tb.Key, newTokens, 0)
+	tb.RedisClient.Set(tb.Key + ":lastRefill", now, 0)
 }
 
 func (tb *TokenBucket) isAllowed() bool {
 	tb.refillTokens()
-	if tb.Tokens > 0 {
-		tb.Tokens -= 1
+	currentTokens, _ := tb.RedisClient.Get(tb.Key).Int()
+	
+	if currentTokens > 0 {
+		tb.RedisClient.Decr(tb.Key)
 		return true
 	}
 	return false
