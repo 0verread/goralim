@@ -8,12 +8,13 @@ import (
 )
 
 func main() {
-	redisStore := goralim.NewRedisClient(&goralim.RedisConfig {
+	config := goralim.RedisConfig {
 		HOST: "127.0.0.1",
 		PORT: 6379,
 		AUTH: "",
-	})
-	tb := goralim.NewTokenBucket("usr-1234", redisStore, 10, 5)
+	}
+	redisStore := goralim.NewRedisClient(config)
+	tb := goralim.NewTokenBucket("usr-ty789", redisStore, 10, 5)
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Hey There this is a Request")

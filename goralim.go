@@ -30,6 +30,7 @@ func NewTokenBucket(key string, redisClient *redis.Client, capacity int, refillR
 }
 
 func (tb *TokenBucket) refillTokens() {
+	// Current time in milliseconds
 	now := time.Now().UnixNano() / 1e6
 	lastRefill, err := tb.RedisClient.Get(tb.Key + ":lastRefill").Int64()
 	if err != nil {
@@ -37,10 +38,10 @@ func (tb *TokenBucket) refillTokens() {
 		tb.RedisClient.Set(tb.Key + ":lastRefill", now, 0)
 	}
 	elapsedTIme := now - lastRefill
-	tokensToAdd := int(elapsedTIme) * (tb.RefillRate/1000)
-
+	tokensToAdd := int(elapsedTIme) * tb.RefillRate / 1000
 	currentTokens, _ := tb.RedisClient.Get(tb.Key).Int()
 	newTokens := currentTokens + tokensToAdd
+
 	if newTokens > tb.Capacity {
 		newTokens = tb.Capacity
 	}
