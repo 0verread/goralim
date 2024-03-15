@@ -7,6 +7,10 @@ import(
 	redis "github.com/go-redis/redis"
 )
 
+// `Key` is the identifier for clint calls. This could be UserID/AccountID or Client IP
+// `Capacity` is the max number of requests a client can make per second
+// `RefillRate` is the rate bucket should be filled at to take new requests
+// `Tokens` is the current number of tokens available in bucket
 type TokenBucket struct {
 	Key string
 	RedisClient *redis.Client
@@ -52,10 +56,12 @@ func (tb *TokenBucket) refillTokens() {
 func (tb *TokenBucket) isAllowed() bool {
 	tb.refillTokens()
 	currentTokens, _ := tb.RedisClient.Get(tb.Key).Int()
-	
+
 	if currentTokens > 0 {
 		tb.RedisClient.Decr(tb.Key)
 		return true
 	}
 	return false
 }
+
+

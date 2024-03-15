@@ -10,14 +10,14 @@ import (
 type RedisConfig struct {
 	HOST string
 	PORT int
-	AUTH string
+	PASS string
 }
 
 func NewRedisClient(config RedisConfig) *redis.Client {
 	addr := fmt.Sprintf("%s:%d", config.HOST, config.PORT)
 	client := redis.NewClient(&redis.Options {
 		Addr: addr,
-		Password: config.AUTH,
+		Password: config.PASS,
 		PoolSize: 200,
 	})
 
@@ -28,3 +28,5 @@ func NewRedisClient(config RedisConfig) *redis.Client {
 
 	return client
 }
+
+
