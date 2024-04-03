@@ -2,7 +2,7 @@
 
 # Goralim
 
-[goralim](https://github.com/0verread/goralim) is a Golang package that provides a rate limiter based on [Token bucket](https://en.wikipedia.org/wiki/Token_bucket) algorithm. It is capabale to handle distributed workload with its redis database support. It has HTTP server middleware support (as of now).
+[goralim](https://github.com/0verread/goralim) is a Golang package that provides a rate limiter based on [Token bucket](https://en.wikipedia.org/wiki/Token_bucket) algorithm. It is capable to handle distributed workload with its redis database support. It has HTTP server middleware support (as of now).
 
 > 🚧 this is a beta version now and under active development. For production use, fork it and made changes based on your need.
 
