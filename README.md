@@ -13,15 +13,21 @@ go get "github.com/0verread/goralim" -m
 ## Usage
 
 ```golang
+package main
+
 import (
-  goralim "github.com/0verread/goralim"
+	"fmt"
+	"net/http"
+
+	goralim "github.com/0verread/goralim"
 )
 
+func main() {
 	// Redis initialization
-	config := goralim.RedisConfig {
+	config := goralim.RedisConfig{
 		HOST: "127.0.0.1",
 		PORT: 6379,
-    // password
+		// password
 		PASS: "",
 	}
 	redisStore := goralim.NewRedisClient(config)
@@ -37,7 +43,7 @@ import (
 
 	rateLimitedHandler := goralim.RateLimiter(tb, handler)
 	http.ListenAndServe(":8080", rateLimitedHandler)
-
+}
 ```
 
 ## License
