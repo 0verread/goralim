@@ -4,8 +4,10 @@ import (
     "testing"
 
     "github.com/go-redis/redis"
+    "github.com/stretchr/testify/assert"
 )
-func TestRefillTokens(t *testing.T){
+
+func setup() *TokenBucket{
     redisClient := redis.NewClient(&redis.Options{Addr: "localhost:6379"})
     defer redisClient.Close()
 
@@ -15,32 +17,22 @@ func TestRefillTokens(t *testing.T){
 
     tb := NewTokenBucket(key, redisClient, capacity, refillRate)
 
-    if tb.Key != key {
-        t.Errorf("got %q, wanted %q", tb.Key, key)
-    }
+    return tb
+}
+
+func TestRefillTokens(t *testing.T){
+    tb := setup()
+    expected_value := "test_key"
+    assert.Equal(t, tb.Key, expected_value)
 }
 
 func TestIsAllowed(t *testing.T){
-
-    redisClient := redis.NewClient(&redis.Options{Addr: "localhost:6379"})
-    defer redisClient.Close()
-
-    key := "test_key"
-    capacity := 10
-    refillRate := 5
-
-    tb := NewTokenBucket(key, redisClient, capacity, refillRate)
-
-    for i:=0; i < capacity; i++ {
+    tb := setup()
+    for i:=0; i < 10; i++ {
         tb.isAllowed()
     }
 
-    if tb.isAllowed() != false {
-        t.Errorf("got %t, wanted %t", tb.isAllowed(), false)
-    }
-
-
-
+    assert.False(t, tb.isAllowed())
 
 }
 
