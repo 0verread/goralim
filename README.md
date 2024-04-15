@@ -46,5 +46,12 @@ func main() {
 }
 ```
 
+## Contributions
+
+feel free to create pull requests for the bugs and/or features. additionally, you can start working on any open issues that i've created. those are the priorities for next stable prod ready release. make sure you write and/or modify the test cases. thank you.
+
+
 ## License
 Under [MIT](LICENSE) license
+
+
