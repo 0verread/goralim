@@ -12,7 +12,6 @@ func RateLimiter(tb *TokenBucket, next http.Handler) http.Handler {
 			fmt.Fprintln(w, "Too Many Requests")
 			return
 		}
-
 		next.ServeHTTP(w, r)
 	})
 }
