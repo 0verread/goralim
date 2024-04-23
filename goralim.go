@@ -22,6 +22,11 @@ type TokenBucket struct {
 
 }
 
+
+func testFunc(){
+
+}
+
 func NewTokenBucket(key string, redisClient *redis.Client, capacity int, refillRate int) *TokenBucket {
 	return &TokenBucket {
 		Key: key,
