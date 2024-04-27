@@ -31,7 +31,6 @@ func TestNewRedisClient(t *testing.T){
     assert.Nil(t, redisClientWithWrongConfig)
 
     // Test with nil config
-
     redisClientWithNilConfig := NewRedisClient(RedisConfig{})
     assert.Nil(t, redisClientWithNilConfig)
 
