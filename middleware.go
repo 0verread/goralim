@@ -3,6 +3,8 @@ package goralim
 import (
 	"fmt"
 	"net/http"
+
+  "github.com/gin-gonic/gin"
 )
 
 func RateLimiter(tb *TokenBucket, next http.Handler) http.Handler {
@@ -14,5 +16,15 @@ func RateLimiter(tb *TokenBucket, next http.Handler) http.Handler {
 		}
 		next.ServeHTTP(w, r)
 	})
+}
+
+func ginRateLimiter(tb *TokenBucket) gin.HandlerFunc {
+  return func (c *gin.ContextA)  {
+    if !tb.isAllowed(){
+      c.AbortWithStatus(http.StatusTooManyRequests)
+      return
+    }
+    c.Next()
+  }
 }
 
